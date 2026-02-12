@@ -317,7 +317,175 @@ The lobster emoji (🦞) is the project's unofficial mascot - a play on "claw" a
 
 ---
 
-## Slide 9: Security & Privacy
+## Slide 9: Identity & Memory System
+
+**Timing:** 2-3 minutes
+
+**Key Points:**
+- This is one of OpenClaw's most innovative features
+- "Programmable personality" through markdown files
+- Emphasize the simplicity and power of the approach
+- Technical audience will appreciate the elegance
+
+**Talking Points:**
+
+**The Innovation:**
+> "Instead of hardcoded behavior, OpenClaw defines everything in markdown files. This is genius in its simplicity - non-developers can customize their AI assistant just by editing text files."
+
+**SOUL.md - The Personality Core:**
+- Loaded every time the agent wakes up
+- Defines: personality traits, communication style, values, boundaries
+- Example: "You are helpful but concise. You prioritize privacy. You never make assumptions."
+- Community has shared 10+ templates for different personas (formal, casual, technical, creative)
+- You can completely change your agent's behavior without touching code
+
+**USER.md - Contextualizing YOU:**
+- Tells the agent about the user
+- Contains: work schedule, timezone, preferred tools, communication preferences
+- Example: "I work 9-5 EST. I prefer Slack over email. I use VS Code and prefer TypeScript."
+- The agent uses this to tailor responses
+- Updates as it learns more about you
+
+**MEMORY.md - Long-Term Persistence:**
+- Two layers of memory:
+  1. Daily logs: `memory/YYYY-MM-DD.md` - raw running log of the day
+  2. MEMORY.md - curated, stable long-term knowledge
+- Survives restarts, channel switches, even reinstalls (if you back it up)
+- The agent can reference conversations from weeks ago
+- Growing memory doesn't hit token limits (loaded once per session, not per message)
+
+**IDENTITY.md - Public Presentation:**
+- Separates internal behavior from external appearance
+- Controls: display name, emoji/avatar, status messages
+- Can have a formal, precise SOUL with a playful, emoji-filled IDENTITY
+- Useful for team/public instances where branding matters
+
+**The Cascade:**
+- Files are hierarchical: Global → Agent → Workspace → Default
+- Most specific definition wins
+- Allows you to have different agents for different purposes
+- Example: "Formal work agent" vs. "Casual personal agent"
+
+**Technical Elegance:**
+> "Files are loaded at session start and injected into the system prompt. The agent wakes up knowing who it is, who you are, and what it remembers. It's declarative configuration for AI personality - infrastructure as code, but for consciousness."
+
+**Why This Matters:**
+- Lowers barrier: non-developers can customize
+- Version control: track changes to your agent's personality in git
+- Sharing: community can share personality templates
+- Debugging: when agent behaves wrong, check the files
+- Transparency: no hidden prompts, everything is readable
+
+**Real-World Example:**
+> "A developer shared their setup: work SOUL.md is formal and focused on code reviews. Personal SOUL.md is casual and helps with home automation. Same codebase, completely different personalities, switched by context."
+
+---
+
+## Slide 10: Technical Challenges
+
+**Timing:** 2-3 minutes
+
+**Key Points:**
+- Critical to be honest about limitations
+- These aren't deal-breakers but users need to know
+- Shows you're knowledgeable and credible, not just hyping
+- Solutions exist for most problems
+
+**Opening:**
+> "Let's talk about the elephant in the room. OpenClaw is powerful, but it has real technical challenges you need to understand before diving in."
+
+**Challenge 1: Context Accumulation**
+
+*The Problem:*
+- Every message includes full conversation history
+- Workspace files (SOUL.md, USER.md, etc.) injected every single message
+- Conservative estimate: ~35,000 tokens per message just for context
+- Tool schemas add another ~8,000 tokens
+- Long sessions → `context_length_exceeded` error → agent crashes
+
+*Why It Happens:*
+- The agent needs context to be coherent
+- Can't make decisions without knowing what happened before
+- File injection ensures agent knows its identity
+- Trade-off: coherence vs. token budget
+
+*Real Impact:*
+- Claude's 200k token limit sounds huge
+- In practice: ~4-5 turns with tool usage before context is full
+- Especially bad in coding sessions with file diffs
+
+**Challenge 2: Token Costs**
+
+*The Horror Stories:*
+- Real user: 1.8 million tokens in one month = **$3,600 bill**
+- Another user: Didn't realize OpenClaw was running, came back to $500 charge
+- These aren't hypothetical - these are real reports from the GitHub discussions
+
+*Why Costs Explode:*
+- Full context every message (35k+ tokens)
+- Tool outputs stored in history (code diffs can be massive)
+- Concurrent sessions multiply the cost
+- Workspace with lots of files = even bigger context
+
+*Math:*
+- Claude Opus pricing: ~$15 per million input tokens
+- 35k tokens/message × 100 messages = 3.5M tokens = **$52.50** for one conversation
+- Without optimization, costs spiral fast
+
+**Challenge 3: Heartbeat Burns Tokens**
+
+*What Is Heartbeat:*
+- Proactive feature: agent checks things on a schedule
+- Examples: "Check email every 5 minutes", "Monitor server health hourly"
+- Sounds great in theory...
+
+*The Problem:*
+- Each heartbeat = full API call with entire session context
+- Checking email every 5 minutes = 288 calls per day
+- At 35k tokens/call = 10 million tokens/day = **$150/day**
+- One user reported **$50 in a single day** from misconfigured email checking
+
+*Why It's Expensive:*
+- Heartbeat doesn't need full context, but gets it anyway
+- Most heartbeats result in "no action needed" - wasted tokens
+- Easy to misconfigure and not notice until bill arrives
+
+*Real Quote:*
+> "I spent $5 per day just on heartbeat reasoning and scheduled task evaluation. That's $150/month before I did any actual work with the agent."
+
+**Solutions & Mitigations:**
+
+*Built-in Commands:*
+- `/compact` - Summarizes older conversation history, frees up context
+- `/new` - Starts fresh session (loses context but resets token count)
+- Both are quick fixes when you hit limits
+
+*Configuration:*
+- `openclaw.json` setting: `agents.defaults.compaction.reserveTokens: 40000`
+- Auto-compacts when context gets too large
+- Prevents the dreaded context_length_exceeded crash
+
+*Heartbeat Best Practices:*
+- Use sparingly - only for truly critical monitoring
+- Longer intervals: 30 min instead of 5 min
+- Disable for non-essential tasks
+- Consider webhooks instead (event-driven, not polling)
+
+*Cost Management:*
+- Monitor usage on LLM provider dashboard
+- Set up billing alerts
+- Use cheaper models for simple tasks
+- Reserve Claude Opus for complex reasoning
+
+**Closing Perspective:**
+> "These challenges are real, but they're not unique to OpenClaw. Any system that uses LLMs intensively faces them. The difference is that OpenClaw is transparent about costs and gives you control. With proper configuration, most users spend $10-50/month, not $3,600. The key is understanding the system before you deploy it."
+
+**Positive Note:**
+> "The community is actively working on solutions. The QMD plugin (released Feb 2026) intelligently searches context instead of sending everything. More optimizations are in the roadmap. This is an actively evolving project that's getting better at token efficiency."
+
+---
+
+## Slide 11: Security & Privacy
 
 **Timing:** 2-3 minutes
 
@@ -372,7 +540,7 @@ The lobster emoji (🦞) is the project's unofficial mascot - a play on "claw" a
 
 ---
 
-## Slide 10: Installation
+## Slide 12: Installation
 
 **Timing:** 1-2 minutes
 
@@ -432,7 +600,151 @@ openclaw onboard --install-daemon
 
 ---
 
-## Slide 11: Use Cases
+## Slide 13: Deployment Options
+
+**Timing:** 2-3 minutes
+
+**Key Points:**
+- Hardware choice matters for 24/7 deployments
+- Mac Mini story is fascinating and worth emphasizing
+- Give practical advice for different budgets
+- Don't oversell any option - be honest about trade-offs
+
+**Talking Points:**
+
+**Opening:**
+> "So you've decided to try OpenClaw. Where should you run it? The beauty of local-first is you have options. Let's talk through them."
+
+**Personal Hardware (Laptop/Desktop):**
+
+*When to use:*
+- Testing, development, learning
+- You're at your computer most of the day anyway
+- Don't need 24/7 uptime
+
+*Pros:*
+- Zero additional cost
+- Instant access - already have the hardware
+- Easy to tinker and experiment
+- Can see logs in real-time
+
+*Cons:*
+- Not always-on (unless you never turn off your computer)
+- Uses your machine's resources
+- Won't work when laptop is closed/sleeping
+
+*Recommendation:*
+> "Start here. Get familiar with OpenClaw on your daily driver before committing to dedicated hardware."
+
+**Raspberry Pi ($90-120):**
+
+*The Setup:*
+- Raspberry Pi 5 with 8GB RAM recommended
+- 128GB+ microSD card
+- 5W typical power consumption (8W peak)
+- Tiny footprint, silent operation
+
+*Pros:*
+- **Cheap**: Total cost under $150
+- **Efficient**: $30/year electricity vs $2,400/year VPS
+- Great learning platform
+- Can run 24/7 without guilt
+
+*Cons:*
+- Limited performance (3-8 second response times)
+- Only supports 1-2 concurrent users
+- MicroSD can corrupt (use quality cards, regular backups)
+- ARM architecture - some tools may need tweaking
+
+*Who it's for:*
+> "Budget-conscious users, homelab enthusiasts, learning projects. Not recommended for production/team use due to performance limits."
+
+**Mac Mini M4 ($549-599) - The Star of the Show:**
+
+*The Phenomenon:*
+> "Here's where it gets interesting. When OpenClaw went viral in January 2026, something unexpected happened: Mac Minis started selling out. Apple reportedly struggled to keep them in stock. Developers realized this was the perfect always-on AI agent server."
+
+*The Specs:*
+- M4 chip (base) or M4 Pro (high-end)
+- 16GB RAM (base) handles cloud APIs perfectly
+- 64GB RAM (Pro) can run local LLMs
+- 20W power consumption (compare: gaming PC is 300-500W)
+- Fanless under normal load - silent operation
+- 5" x 5" footprint - tuck it anywhere
+- Neural Engine: 38 TOPS of AI performance
+
+*Why It's Perfect:*
+- **Always-on reliability**: Desktop-class hardware, server-class uptime
+- **Quiet**: No fan noise in your home/office
+- **Efficient**: $2-3/month electricity
+- **Powerful enough**: Handles both cloud APIs and local models
+- **macOS**: Unix-based, great developer experience
+- **Resale value**: Macs hold value if you change your mind
+
+*The Economics:*
+- Base M4: $549 on sale (reg $599)
+- vs. VPS: $20/month × 24 months = $480 (then you own nothing)
+- Mac Mini: pay once, own forever, can resell
+
+*The Community Sentiment:*
+> "The Mac Mini has been rebranded from 'desktop computer' to 'dedicated AI server.' Community members are setting them up headless (no monitor), running them in closets, server racks, under desks. It's become the default recommendation for serious OpenClaw users."
+
+*Real Quote:*
+> "I set up my M4 Mac Mini as a headless OpenClaw server. It sits in my network rack, uses less power than a light bulb, and hasn't been rebooted in 45 days. Best $600 I've spent on tech." - Community member
+
+*Caution:*
+> "The base 16GB model is fine for most users with cloud APIs. Don't feel pressured to buy the expensive 64GB model unless you specifically want to run local LLMs like Llama 3 70B."
+
+**VPS/Cloud ($5-20/month):**
+
+*The Setup:*
+- Digital Ocean, Hetzner, Contabo, etc.
+- 2 CPU cores, 4GB RAM, 20GB storage typical
+- Located in datacenter, professional uptime
+- Access from anywhere via IP/domain
+
+*Pros:*
+- **No hardware to manage**: Provider handles physical infrastructure
+- **Reliable uptime**: 99.9% SLA, backup power, redundant network
+- **Scalable**: Upgrade RAM/CPU with a few clicks
+- **Global access**: Same IP whether you're home, traveling, or at work
+- **Still self-hosted**: You control the software, just not the physical server
+
+*Cons:*
+- **Ongoing cost**: $5-20/month forever
+- **You don't own it**: Stop paying, lose everything
+- **Less control**: Can't touch hardware, limited to provider's offerings
+- **Privacy consideration**: Your data is in a datacenter (though encrypted)
+
+*Providers Mentioned:*
+- Hetzner: Good price/performance, EU-based
+- Digital Ocean: Developer-friendly, lots of tutorials
+- Contabo: Very cheap, acceptable for non-critical use
+
+*Who it's for:*
+> "People who want 24/7 uptime without managing hardware, travel frequently, or don't want physical device at home. Also good for testing before buying dedicated hardware."
+
+**Comparison Table (Mental Framework):**
+
+| Option | Upfront | Monthly | Uptime | Performance | Best For |
+|--------|---------|---------|--------|-------------|----------|
+| Laptop | $0 | $0 | When awake | Excellent | Testing, dev |
+| Pi 5 | $120 | $2 elec | 24/7 | Basic | Learning, budget |
+| Mac Mini | $549 | $2 elec | 24/7 | Excellent | Serious users |
+| VPS | $0 | $5-20 | 24/7 | Good | No hardware mgmt |
+
+**Community Trends:**
+- Beginners: Laptop → decide if they like it
+- Budget: Raspberry Pi
+- Most popular: Mac Mini M4 (the "sweet spot")
+- Travelers/minimalists: VPS
+
+**Closing Advice:**
+> "My recommendation: Start on your laptop. If you use OpenClaw daily for a month, then invest in dedicated hardware. Most people go Mac Mini, but Pi works great for simpler use cases. VPS is perfect if you hate managing hardware. There's no wrong choice - it depends on your needs, budget, and preferences."
+
+---
+
+## Slide 14: Use Cases
 
 **Timing:** 2 minutes
 
@@ -491,7 +803,132 @@ openclaw onboard --install-daemon
 
 ---
 
-## Slide 12: Community & Growth
+## Slide 15: See It In Action
+
+**Timing:** 1-2 minutes
+
+**Key Points:**
+- These are clickable links - you can demo live if internet allows
+- Don't try to show everything - pick 1-2 to highlight
+- Time management: if running long, just mention the links
+- The slide will be available in the GitHub repo for people to explore later
+
+**Talking Points:**
+
+**Opening:**
+> "Theory is great, but let's see this in action. I've got several demos linked here - we can click through a couple if time allows, or you can check these out on your own later. The presentation is on GitHub with all these links."
+
+**Demo 1: freeCodeCamp Tutorial (55 min):**
+
+*What it is:*
+- Comprehensive walkthrough from installation to real use cases
+- Posted on freeCodeCamp YouTube channel
+- Covers Docker sandboxing, security setup
+
+*When to recommend:*
+> "If you learn by watching, this is your best resource. It's long but thorough. You'll see the entire setup process, multiple messaging platforms being connected, and real automation examples."
+
+*What's shown:*
+- npm install process
+- Connecting to Telegram and Discord
+- Creating a custom skill
+- Docker sandboxing for security
+- Troubleshooting common issues
+
+*Good for:*
+- Visual learners
+- People who want to see everything before trying
+- Understanding the full workflow
+
+**Demo 2: Peter Steinberger's Creator Demo:**
+
+*What it is:*
+- Interview/podcast with OpenClaw's creator
+- Shows his real daily workflow
+- Available on YouTube, Apple Podcasts, Spotify
+
+*What's interesting:*
+> "This is how the creator actually uses OpenClaw in his daily life. Not a polished demo - real workflows he depends on."
+
+*What he shows:*
+- Morning routine: "Hey Claw, what's on my calendar today?"
+- Flight check-ins: Forwards confirmation email → Claw automatically checks him in 24h before flight
+- Home automation: "Turn on the lights in my office"
+- Google Workspace: Agent edits Docs and Sheets on command
+- Voice interactions: Talk mode on iOS
+- Daily briefs: Automated morning summary of important updates
+
+*The hook:*
+> "Peter says OpenClaw manages about 30% of his digital life now. Email triage, calendar management, home control - all through conversations with his AI assistant across multiple platforms."
+
+*Good for:*
+- Understanding real-world value
+- Seeing advanced workflows
+- Getting inspired about possibilities
+
+**Demo 3: 30-Minute Quick Start:**
+
+*What it is:*
+- Focused tutorial on safe setup + 5 specific use cases
+- Shorter time commitment than freeCodeCamp
+- Emphasis on security from the start
+
+*Good for:*
+- People with limited time
+- Those who want to see results quickly
+- Security-conscious users
+
+**Demo 4: Community Showcase:**
+
+*What it is:*
+- Real user-submitted projects (Twitter/X posts)
+- Not polished demos - actual implementations
+
+*Categories shown:*
+- Smart home: Raspberry Pi controlling lights, thermostats
+- Developer tools: GitHub integration, PR management
+- Productivity: Email summarization, calendar timeblocking
+- Creative: Excalidraw diagram generation, video creation
+
+*Why it's valuable:*
+> "This is the community in action. These aren't hypotheticals - these are things people have actually built. When you see 'Telegram bot that generates Excalidraw diagrams from text descriptions,' that's a real project someone shipped."
+
+*Inspiration factor:*
+- See what's possible beyond basic examples
+- Discover skills you didn't know existed
+- Find similar use cases to your own needs
+
+**Live Demo Strategy (if you have internet and time):**
+
+*Option A - Quick Win (30 seconds):*
+1. Click freeCodeCamp link → show video thumbnail and description
+2. "This is the gold standard tutorial - 55 minutes, very thorough."
+3. Move on
+
+*Option B - Community Showcase (1 minute):*
+1. Click Showcase link
+2. Scroll through 3-4 example projects
+3. "Here's someone controlling their HomePod, here's a GitHub PR automation, here's meal planning..."
+4. Shows breadth of community creativity
+
+*Option C - Peter's Demo (if you have 2+ minutes):*
+1. Click creator demo link
+2. If video, skip to interesting timestamp (flight check-in or voice demo)
+3. Play 30-60 seconds
+4. "This is the creator showing real daily usage"
+
+**If NO time / NO internet:**
+> "I've linked four great resources here: a comprehensive 55-minute tutorial, the creator's real-world demo, a quick 30-minute start guide, and a community showcase. The slides are on GitHub, so you can click through these later. I especially recommend the creator demo if you want to see this in action - it's eye-opening how much he's automated."
+
+**Transition:**
+> "So that's where you can see OpenClaw in action. Now let's talk about the community driving all this innovation..."
+
+**Pro Tip:**
+During your prep, actually watch 5-10 minutes of each video so you can speak knowledgeably about what they contain. Audiences can tell when you're just reading link descriptions vs. when you've actually engaged with the content.
+
+---
+
+## Slide 16: Community & Growth
 
 **Timing:** 1-2 minutes
 
@@ -565,7 +1002,7 @@ The community-driven roadmap includes:
 
 ---
 
-## Slide 13: Why OpenClaw Matters
+## Slide 17: Why OpenClaw Matters
 
 **Timing:** 1-2 minutes
 
@@ -634,7 +1071,7 @@ The community-driven roadmap includes:
 
 ---
 
-## Slide 14: Call to Action
+## Slide 18: Call to Action
 
 **Timing:** 1-2 minutes
 
@@ -692,7 +1129,7 @@ openclaw onboard --install-daemon
 
 ---
 
-## Slide 15: Thank You
+## Slide 19: Thank You
 
 **Timing:** 30 seconds + Q&A
 
@@ -757,7 +1194,12 @@ openclaw onboard --install-daemon
 **Pacing:**
 - Don't rush through slides to "make time"
 - Better to cover fewer slides well than all slides poorly
-- If running long, skip or abbreviate Slides 5, 11, or 12
+- If running long, you can:
+  - Abbreviate Slide 5 (Architecture Components) - just show the diagram briefly
+  - Skip Slide 10 (Technical Challenges) - though it builds credibility
+  - Speed through Slide 13 (Deployment Options) - just mention the Mac Mini story
+  - Skip clicking through Slide 15 (See It In Action) - just point to the links
+- Core slides to never skip: Problem (2), What is OpenClaw (3), Identity/Memory (9), Security (11), Call to Action (18)
 
 **Energy:**
 - Show enthusiasm - this is genuinely cool technology
