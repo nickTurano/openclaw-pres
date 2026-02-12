@@ -143,21 +143,33 @@ The presentation is responsive and works on:
 
 4. Save
 
-## Resources Referenced
+## Resources & References
 
+📚 **[Complete Sources & References](SOURCES.md)** - Comprehensive list of all sources used in the presentation, organized by topic.
+
+### Quick Links
 - [GitHub - openclaw/openclaw](https://github.com/openclaw/openclaw)
 - [OpenClaw Official Website](https://openclaw.ai/)
 - [Introducing OpenClaw - Blog Post](https://openclaw.ai/blog/introducing-openclaw)
 - [Wikipedia - OpenClaw](https://en.wikipedia.org/wiki/OpenClaw)
 - [Reveal.js Documentation](https://revealjs.com/)
 
+**See [SOURCES.md](SOURCES.md) for 60+ additional references including:**
+- Video tutorials and demos
+- Hardware deployment guides
+- Identity & memory system documentation
+- Token optimization strategies
+- Security analysis
+- Community reviews
+
 ## Project Structure
 
 ```
 openclaw-pres/
-├── index.html          # Main presentation file
-├── README.md           # This file - setup and usage instructions
-└── speaker-notes.md    # Extended talking points (optional)
+├── index.html          # Main presentation file (19 slides)
+├── README.md           # Setup and usage instructions
+├── speaker-notes.md    # Extended talking points for presenters
+└── SOURCES.md          # Complete references and sources (60+ links)
 ```
 
 ## License
