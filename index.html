@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw: Your Personal AI Assistant</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/black.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        .reveal h1, .reveal h2, .reveal h3 {
+            text-transform: none;
+        }
+        .reveal .lobster {
+            font-size: 1.5em;
+        }
+        .reveal code {
+            background: #2d2d2d;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+        .reveal pre code {
+            max-height: 500px;
+        }
+        .reveal .fragment.highlight-current-blue {
+            opacity: 1;
+            visibility: inherit;
+        }
+        .reveal .fragment.highlight-current-blue.current-fragment {
+            color: #42affa;
+        }
+        .reveal ul {
+            font-size: 0.9em;
+        }
+        .reveal .smaller {
+            font-size: 0.8em;
+        }
+        .reveal .architecture-box {
+            background: #1a1a1a;
+            border: 2px solid #42affa;
+            padding: 1em;
+            margin: 0.5em;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title -->
+            <section>
+                <h1>OpenClaw</h1>
+                <h3>Your Personal AI Assistant</h3>
+                <p class="lobster">🦞</p>
+                <p><em>Any OS. Any Platform. The lobster way.</em></p>
+                <p class="smaller">Open-source, locally-run AI agent framework</p>
+                <aside class="notes">
+                    Welcome everyone. Today I'm excited to introduce OpenClaw - a revolutionary open-source AI assistant framework.
+                    This is a technical talk for developers, so we'll dive into architecture, security, and implementation details.
+                </aside>
+            </section>
+
+            <!-- Slide 2: The Problem -->
+            <section>
+                <h2>The Problem</h2>
+                <ul>
+                    <li class="fragment">Current AI assistants are <strong>cloud-dependent</strong>
+                        <ul class="smaller">
+                            <li>Privacy concerns with your data</li>
+                            <li>Vendor lock-in</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">Limited control over infrastructure and data</li>
+                    <li class="fragment">Fragmented communication
+                        <ul class="smaller">
+                            <li>AI only works in specific apps</li>
+                            <li>No unified assistant across platforms</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">🔒 Trust boundaries outside your control</li>
+                </ul>
+                <aside class="notes">
+                    The AI assistant landscape has a fundamental problem. Whether you're using ChatGPT, Google Assistant, or others,
+                    they all require sending your data to the cloud. You have no control over where it goes, how it's processed,
+                    or who has access. And they're siloed - your assistant in one app doesn't work in another.
+                </aside>
+            </section>
+
+            <!-- Slide 3: What is OpenClaw? -->
+            <section>
+                <h2>What is OpenClaw?</h2>
+                <ul>
+                    <li class="fragment">Personal AI assistant that runs on <strong>YOUR hardware</strong></li>
+                    <li class="fragment">Multi-channel messaging integration
+                        <ul class="smaller">
+                            <li>WhatsApp, Telegram, Slack, Discord, and more</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">Originally "Clawdbot" by Peter Steinberger (Nov 2025)</li>
+                    <li class="fragment">Renamed to OpenClaw (Jan 2026) after trademark issues</li>
+                    <li class="fragment">📈 Explosive growth: 9k → 60k+ GitHub stars in days</li>
+                </ul>
+                <aside class="notes">
+                    OpenClaw is your personal AI assistant that runs entirely on your own infrastructure.
+                    It started as Clawdbot, a personal project, and went viral. After some trademark drama with Anthropic,
+                    it was renamed to OpenClaw and the growth has been astronomical - one of the fastest-growing
+                    open source projects in history.
+                </aside>
+            </section>
+
+            <!-- Slide 4: Core Architecture - High Level -->
+            <section>
+                <h2>Core Architecture</h2>
+                <div class="architecture-box">
+                    <p><strong>WebSocket Gateway Control Plane</strong></p>
+                    <p class="smaller">ws://127.0.0.1:18789</p>
+                </div>
+                <ul>
+                    <li class="fragment">🤖 Pi agent runtime in RPC mode</li>
+                    <li class="fragment">📬 Multi-channel inbox connectivity</li>
+                    <li class="fragment">🔧 Tool execution framework</li>
+                    <li class="fragment">🔌 Model-agnostic LLM integration</li>
+                </ul>
+                <aside class="notes">
+                    At the heart of OpenClaw is a WebSocket-based gateway that acts as the control plane.
+                    It uses Pi agent runtime to connect to various LLM providers, manage multi-channel messaging,
+                    and execute tools on your behalf. Everything communicates through this central gateway.
+                </aside>
+            </section>
+
+            <!-- Slide 5: Core Architecture - Components -->
+            <section>
+                <h2>Architecture Components</h2>
+                <div style="font-size: 0.7em;">
+                    <div class="architecture-box">
+                        <strong>User Interfaces</strong><br>
+                        WhatsApp | Telegram | Slack | Discord | Web Chat
+                    </div>
+                    <div style="margin: 0.5em 0;">↕️</div>
+                    <div class="architecture-box">
+                        <strong>Gateway / Control Plane</strong><br>
+                        WebSocket Server | Message Routing | Session Management
+                    </div>
+                    <div style="margin: 0.5em 0;">↕️</div>
+                    <div class="architecture-box">
+                        <strong>Agent Runtime</strong><br>
+                        Pi Agent (RPC) | Model Integration | Context Management
+                    </div>
+                    <div style="margin: 0.5em 0;">↕️</div>
+                    <div class="architecture-box">
+                        <strong>Tool/Skill Execution Layer</strong><br>
+                        100+ AgentSkills | Browser Control | System Access
+                    </div>
+                </div>
+                <aside class="notes">
+                    Here's the full stack. Users interact through any messaging platform. The gateway routes messages
+                    to the agent runtime, which calls the LLM and executes tools. Everything runs locally on your machine.
+                </aside>
+            </section>
+
+            <!-- Slide 6: Key Features - Communication -->
+            <section>
+                <h2>Key Features: Communication</h2>
+                <ul>
+                    <li class="fragment"><strong>15+ messaging platforms</strong>
+                        <ul class="smaller">
+                            <li>WhatsApp (via Baileys)</li>
+                            <li>Telegram (via grammY)</li>
+                            <li>Slack, Discord, Matrix, Signal, and more</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">🎤 Voice Wake and Talk Mode
+                        <ul class="smaller">
+                            <li>macOS, iOS, Android support</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">🌐 Web chat interface with image support</li>
+                    <li class="fragment">📧 Gmail Pub/Sub integration</li>
+                </ul>
+                <aside class="notes">
+                    OpenClaw connects to virtually every messaging platform you use. You can text your AI assistant
+                    on WhatsApp, call it on Telegram, or use voice commands on your phone. It's truly platform-agnostic.
+                </aside>
+            </section>
+
+            <!-- Slide 7: Key Features - Automation -->
+            <section>
+                <h2>Key Features: Automation</h2>
+                <ul>
+                    <li class="fragment"><strong>100+ preconfigured AgentSkills</strong>
+                        <ul class="smaller">
+                            <li>Shell commands, file management</li>
+                            <li>Web automation, API calls</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">🌐 Browser control
+                        <ul class="smaller">
+                            <li>Dedicated Chrome/Chromium instance</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">⏰ Cron jobs and webhooks</li>
+                    <li class="fragment">🎨 Live Canvas with A2UI
+                        <ul class="smaller">
+                            <li>Agent-driven visual interface generation</li>
+                        </ul>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    The skill system is incredibly powerful. Out of the box, you get over 100 skills that can
+                    control your browser, run shell commands, manage files, and more. It can even generate
+                    visual interfaces on the fly using the A2UI canvas system.
+                </aside>
+            </section>
+
+            <!-- Slide 8: Model Support -->
+            <section>
+                <h2>Model Support & Flexibility</h2>
+                <ul>
+                    <li class="fragment"><strong>Model agnostic</strong> - works with any LLM API</li>
+                    <li class="fragment">🌟 Recommended: <strong>Anthropic Claude Pro/Max</strong>
+                        <ul class="smaller">
+                            <li>Claude Opus 4.6 (latest and most capable)</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">Also supports:
+                        <ul class="smaller">
+                            <li>KIMI K2.5</li>
+                            <li>Xiaomi MiMo-V2-Flash</li>
+                            <li>Any OpenAI-compatible API</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">Why Claude?
+                        <ul class="smaller">
+                            <li>Long-context strength (200k+ tokens)</li>
+                            <li>Prompt-injection resistance</li>
+                        </ul>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    You're not locked into a single AI provider. OpenClaw works with any LLM, though Claude is
+                    recommended because of its strong context handling and better security against prompt injection.
+                    But you can use whatever model fits your needs and budget.
+                </aside>
+            </section>
+
+            <!-- Slide 9: Security & Privacy -->
+            <section>
+                <h2>Security & Privacy 🔒</h2>
+                <ul>
+                    <li class="fragment"><strong>Local-first philosophy</strong>
+                        <ul class="smaller">
+                            <li>"Your infrastructure. Your keys. Your data."</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">Default: tools execute on host for personal sessions</li>
+                    <li class="fragment">Optional: Docker sandboxing for group/channel sessions</li>
+                    <li class="fragment">Recent security hardening
+                        <ul class="smaller">
+                            <li>34 security commits in recent updates</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">⚠️ Acknowledged challenge: prompt injection
+                        <ul class="smaller">
+                            <li>Industry-wide unsolved problem</li>
+                            <li>Be cautious with exposed instances</li>
+                        </ul>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    Security is taken seriously. The core principle is local-first - your data never leaves your control
+                    unless you explicitly send it to an LLM API. For group chats, you can use Docker sandboxing.
+                    That said, prompt injection remains an unsolved problem across the entire AI industry.
+                    Don't expose your instance to untrusted users without understanding the risks.
+                </aside>
+            </section>
+
+            <!-- Slide 10: Installation -->
+            <section>
+                <h2>Installation & Getting Started</h2>
+                <pre><code class="language-bash" data-trim>
+# Install OpenClaw globally
+npm install -g openclaw@latest
+
+# Run onboarding and install daemon
+openclaw onboard --install-daemon
+                </code></pre>
+                <ul class="smaller">
+                    <li class="fragment">Requires Node.js ≥22</li>
+                    <li class="fragment">Update channels: stable / beta / dev</li>
+                    <li class="fragment">Quick onboarding process guides you through setup</li>
+                </ul>
+                <aside class="notes">
+                    Getting started is incredibly simple. Two commands and you're up and running.
+                    The onboarding process walks you through connecting your messaging platforms
+                    and configuring your LLM API keys. The whole setup takes less than 10 minutes.
+                </aside>
+            </section>
+
+            <!-- Slide 11: Use Cases -->
+            <section>
+                <h2>Use Cases & Demos</h2>
+                <ul>
+                    <li class="fragment">🤵 Personal productivity assistant
+                        <ul class="smaller">
+                            <li>Manage tasks across all your messaging apps</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">🏠 Home lab automation and monitoring
+                        <ul class="smaller">
+                            <li>Control services, check system status</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">💻 Development workflow integration
+                        <ul class="smaller">
+                            <li>Code reviews, deployments, CI/CD notifications</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">👥 Team collaboration
+                        <ul class="smaller">
+                            <li>With proper security configuration</li>
+                        </ul>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    The use cases are endless. Use it as your personal assistant to manage tasks and reminders.
+                    Automate your home lab. Integrate it into your development workflow for code reviews and deployments.
+                    Some teams even use it for collaboration, though you need to be careful with security settings.
+                </aside>
+            </section>
+
+            <!-- Slide 12: Community & Growth -->
+            <section>
+                <h2>Community & Growth 📈</h2>
+                <ul>
+                    <li class="fragment"><strong>One of the fastest-growing OSS projects in history</strong></li>
+                    <li class="fragment">100k+ GitHub stars, 2M weekly visitors</li>
+                    <li class="fragment">Active development and community contributions</li>
+                    <li class="fragment">Open roadmap:
+                        <ul class="smaller">
+                            <li>Enhanced security improvements</li>
+                            <li>More model integrations</li>
+                            <li>Gateway reliability enhancements</li>
+                        </ul>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    The growth has been absolutely explosive. We're talking about one of the fastest-growing
+                    open source projects ever. The community is incredibly active, contributing skills,
+                    integrations, and improvements daily. The roadmap is community-driven and transparent.
+                </aside>
+            </section>
+
+            <!-- Slide 13: Why OpenClaw Matters -->
+            <section>
+                <h2>Why OpenClaw Matters</h2>
+                <ul>
+                    <li class="fragment"><strong>Open source</strong> > closed SaaS
+                        <ul class="smaller">
+                            <li>Transparency, control, community</li>
+                        </ul>
+                    </li>
+                    <li class="fragment"><strong>Local-first</strong> > cloud-dependent
+                        <ul class="smaller">
+                            <li>Privacy, ownership, data sovereignty</li>
+                        </ul>
+                    </li>
+                    <li class="fragment"><strong>Multi-platform</strong> > single-channel
+                        <ul class="smaller">
+                            <li>Flexibility, convenience, choice</li>
+                        </ul>
+                    </li>
+                    <li class="fragment">🎯 <strong>Democratizes AI agents for developers</strong></li>
+                </ul>
+                <aside class="notes">
+                    This is why OpenClaw matters. It represents a fundamental shift in how we think about
+                    AI assistants. Instead of giving up control to Big Tech, you own your data and infrastructure.
+                    Instead of being locked into one platform, you choose your tools. This is AI for the people,
+                    by the people.
+                </aside>
+            </section>
+
+            <!-- Slide 14: Call to Action -->
+            <section>
+                <h2>Get Started Today 🦞</h2>
+                <div style="font-size: 0.9em;">
+                    <p class="fragment"><strong>GitHub:</strong> <a href="https://github.com/openclaw/openclaw">github.com/openclaw/openclaw</a></p>
+                    <p class="fragment"><strong>Website:</strong> <a href="https://openclaw.ai">openclaw.ai</a></p>
+                    <br>
+                    <div class="fragment">
+                        <p><strong>Try it now:</strong></p>
+                        <pre><code class="language-bash" data-trim>
+npm install -g openclaw@latest
+openclaw onboard --install-daemon
+                        </code></pre>
+                    </div>
+                    <br>
+                    <p class="fragment">⭐ Star the repo | 🤝 Contribute | 💬 Join the community</p>
+                </div>
+                <aside class="notes">
+                    So here's your call to action. Go to GitHub, star the repo, try it out yourself.
+                    It takes less than 10 minutes to get started. If you're interested in contributing,
+                    the community is welcoming and the codebase is well-documented. Let's build the
+                    future of AI assistants together.
+                </aside>
+            </section>
+
+            <!-- Slide 15: Thank You -->
+            <section>
+                <h1>Thank You! 🦞</h1>
+                <p>Questions?</p>
+                <br>
+                <p class="smaller">
+                    <em>"Any OS. Any Platform. The lobster way."</em>
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            transition: 'slide',
+            backgroundTransition: 'fade',
+            plugins: [ RevealHighlight, RevealNotes ],
+            width: 1280,
+            height: 720,
+            margin: 0.04,
+            minScale: 0.2,
+            maxScale: 2.0
+        });
+    </script>
+</body>
+</html>
