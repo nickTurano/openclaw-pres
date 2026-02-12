@@ -245,7 +245,84 @@
                 </aside>
             </section>
 
-            <!-- Slide 9: Security & Privacy -->
+            <!-- Slide 9: Identity & Memory System -->
+            <section>
+                <h2>Identity & Memory System</h2>
+                <div style="font-size: 0.8em;">
+                    <p class="fragment">OpenClaw uses <strong>markdown files</strong> to define agent behavior:</p>
+                    <ul>
+                        <li class="fragment"><strong>SOUL.md</strong> - Personality & behavior
+                            <ul class="smaller">
+                                <li>"Who the agent is, how it should behave, what it values"</li>
+                            </ul>
+                        </li>
+                        <li class="fragment"><strong>USER.md</strong> - Your context & preferences
+                            <ul class="smaller">
+                                <li>Work patterns, timezone, communication style</li>
+                            </ul>
+                        </li>
+                        <li class="fragment"><strong>MEMORY.md</strong> - Long-term memory
+                            <ul class="smaller">
+                                <li>Persists across restarts, survives channel switches</li>
+                                <li>Daily logs: memory/YYYY-MM-DD.md</li>
+                            </ul>
+                        </li>
+                        <li class="fragment"><strong>IDENTITY.md</strong> - Public presentation
+                            <ul class="smaller">
+                                <li>Name, emoji, how agent appears to users</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p class="fragment smaller">Files loaded at session start → injected into system prompt</p>
+                </div>
+                <aside class="notes">
+                    This is one of OpenClaw's most innovative features. Instead of hardcoded behavior, everything is
+                    defined in markdown files. SOUL.md defines personality - loaded every time the agent wakes.
+                    USER.md tells the agent about you. MEMORY.md persists knowledge across sessions. IDENTITY.md
+                    controls how the agent presents itself. It's "programmable personality" - you can edit these
+                    files to completely change your agent's behavior without touching code.
+                </aside>
+            </section>
+
+            <!-- Slide 10: Technical Challenges -->
+            <section>
+                <h2>Technical Challenges ⚠️</h2>
+                <div style="font-size: 0.8em;">
+                    <ul>
+                        <li class="fragment"><strong>Context accumulation</strong>
+                            <ul class="smaller">
+                                <li>Full conversation history sent with every request</li>
+                                <li>Workspace files injected every message (~35k tokens)</li>
+                                <li>context_length_exceeded errors in long sessions</li>
+                            </ul>
+                        </li>
+                        <li class="fragment"><strong>Token costs escalate quickly</strong>
+                            <ul class="smaller">
+                                <li>Real example: 1.8M tokens/month = $3,600 bill</li>
+                                <li>Tool schemas: ~8k tokens per request</li>
+                            </ul>
+                        </li>
+                        <li class="fragment"><strong>Heartbeat feature burns tokens</strong>
+                            <ul class="smaller">
+                                <li>Each heartbeat = full API call with entire context</li>
+                                <li>Example: Check email every 5 min = $50/day</li>
+                                <li>$5/day just on heartbeat reasoning = $150/month</li>
+                            </ul>
+                        </li>
+                        <li class="fragment"><strong>Solutions:</strong> /compact, /new, configure compaction</li>
+                    </ul>
+                </div>
+                <aside class="notes">
+                    Be honest about the challenges. Context management is OpenClaw's biggest technical problem.
+                    Every message includes the full history plus workspace files - that's 35k tokens minimum.
+                    Heartbeat is powerful but expensive - one user burned $50 in a day checking email every 5 minutes.
+                    These aren't deal-breakers, but users need to understand the costs. Solutions exist: /compact
+                    summarizes history, /new starts fresh, and you can configure automatic compaction. Smart users
+                    disable heartbeat for non-critical tasks and use longer intervals.
+                </aside>
+            </section>
+
+            <!-- Slide 11: Security & Privacy -->
             <section>
                 <h2>Security & Privacy 🔒</h2>
                 <ul>
@@ -276,7 +353,7 @@
                 </aside>
             </section>
 
-            <!-- Slide 10: Installation -->
+            <!-- Slide 12: Installation -->
             <section>
                 <h2>Installation & Getting Started</h2>
                 <pre><code class="language-bash" data-trim>
@@ -298,7 +375,7 @@ openclaw onboard --install-daemon
                 </aside>
             </section>
 
-            <!-- Slide 11: Deployment Options -->
+            <!-- Slide 13: Deployment Options -->
             <section>
                 <h2>Where to Run OpenClaw</h2>
                 <div style="font-size: 0.85em;">
@@ -337,7 +414,7 @@ openclaw onboard --install-daemon
                 </aside>
             </section>
 
-            <!-- Slide 12: Use Cases -->
+            <!-- Slide 14: Use Cases -->
             <section>
                 <h2>Use Cases & Demos</h2>
                 <ul>
@@ -369,7 +446,7 @@ openclaw onboard --install-daemon
                 </aside>
             </section>
 
-            <!-- Slide 13: See It In Action -->
+            <!-- Slide 15: See It In Action -->
             <section>
                 <h2>See It In Action 🎬</h2>
                 <div style="font-size: 0.85em;">
@@ -400,7 +477,7 @@ openclaw onboard --install-daemon
                 </aside>
             </section>
 
-            <!-- Slide 14: Community & Growth -->
+            <!-- Slide 16: Community & Growth -->
             <section>
                 <h2>Community & Growth 📈</h2>
                 <ul>
@@ -422,7 +499,7 @@ openclaw onboard --install-daemon
                 </aside>
             </section>
 
-            <!-- Slide 15: Why OpenClaw Matters -->
+            <!-- Slide 17: Why OpenClaw Matters -->
             <section>
                 <h2>Why OpenClaw Matters</h2>
                 <ul>
@@ -451,7 +528,7 @@ openclaw onboard --install-daemon
                 </aside>
             </section>
 
-            <!-- Slide 16: Call to Action -->
+            <!-- Slide 18: Call to Action -->
             <section>
                 <h2>Get Started Today 🦞</h2>
                 <div style="font-size: 0.9em;">
@@ -476,7 +553,7 @@ openclaw onboard --install-daemon
                 </aside>
             </section>
 
-            <!-- Slide 17: Thank You -->
+            <!-- Slide 19: Thank You -->
             <section>
                 <h1>Thank You! 🦞</h1>
                 <p>Questions?</p>
