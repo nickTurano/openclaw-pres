@@ -6,7 +6,7 @@ A professional Reveal.js-based presentation introducing OpenClaw - the open-sour
 
 **Target Audience:** Developers and technical professionals
 **Duration:** 15-20 minutes
-**Slides:** 16 slides
+**Slides:** 17 slides
 **Format:** Interactive HTML presentation (Reveal.js)
 
 ## Quick Start
@@ -55,12 +55,13 @@ A professional Reveal.js-based presentation introducing OpenClaw - the open-sour
 8. **Model Support** - LLM flexibility
 9. **Security & Privacy** - Local-first approach and considerations
 10. **Installation** - Getting started commands
-11. **Use Cases** - Real-world applications
-12. **See It In Action** - Demo videos and resources
-13. **Community & Growth** - Project momentum
-14. **Why OpenClaw Matters** - Core value propositions
-15. **Call to Action** - Links and next steps
-16. **Thank You** - Closing slide
+11. **Deployment Options** - Hardware choices (Raspberry Pi, Mac Mini, VPS)
+12. **Use Cases** - Real-world applications
+13. **See It In Action** - Demo videos and resources
+14. **Community & Growth** - Project momentum
+15. **Why OpenClaw Matters** - Core value propositions
+16. **Call to Action** - Links and next steps
+17. **Thank You** - Closing slide
 
 ### Key Messaging Points
 
